@@ -1,0 +1,173 @@
+<div class="container-fluid p-4 p-md-5">
+
+  <div class="mb-5">
+    <h2 class="fw-bold text-dark m-0 ls-tight">Configurações</h2>
+    <p class="text-muted m-0">Gerencie suas preferências e dados da conta.</p>
+  </div>
+
+  <div class="row g-4">
+
+    <div class="col-md-3">
+      <div class="list-group shadow-sm rounded-4 border-0 overflow-hidden bg-white">
+
+        <button class="list-group-item list-group-item-action py-3 px-4 d-flex align-items-center gap-3 border-0 border-bottom"
+                [class.active-tab]="abaAtiva() === 'perfil'"
+                (click)="mudarAba('perfil')">
+          <div class="icon-circle"><i class="bi bi-person-fill"></i></div>
+          <div class="d-flex flex-column align-items-start">
+            <span class="fw-bold text-dark">Meu Perfil</span>
+            <span class="text-muted extra-small">Dados pessoais de acesso</span>
+          </div>
+        </button>
+
+        <button class="list-group-item list-group-item-action py-3 px-4 d-flex align-items-center gap-3 border-0 border-bottom"
+                [class.active-tab]="abaAtiva() === 'empresa'"
+                (click)="mudarAba('empresa')">
+          <div class="icon-circle"><i class="bi bi-building-fill"></i></div>
+          <div class="d-flex flex-column align-items-start">
+            <span class="fw-bold text-dark">Minha Empresa</span>
+            <span class="text-muted extra-small">Dados fiscais e operacionais</span>
+          </div>
+        </button>
+
+        <button class="list-group-item list-group-item-action py-3 px-4 d-flex align-items-center gap-3 border-0"
+                [class.active-tab]="abaAtiva() === 'seguranca'"
+                (click)="mudarAba('seguranca')">
+          <div class="icon-circle"><i class="bi bi-shield-lock-fill"></i></div>
+          <div class="d-flex flex-column align-items-start">
+            <span class="fw-bold text-dark">Segurança</span>
+            <span class="text-muted extra-small">Senha e sessões</span>
+          </div>
+        </button>
+
+      </div>
+    </div>
+
+    <div class="col-md-9">
+
+      <div *ngIf="abaAtiva() === 'perfil'" class="card border-0 shadow-sm rounded-4 fade-in">
+        <div class="card-header bg-white border-bottom p-4">
+          <h5 class="fw-bold m-0">Informações do Usuário</h5>
+        </div>
+        <div class="card-body p-4">
+          <div class="row g-3">
+            <div class="col-md-12">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3" style="width: 80px; height: 80px;">
+                  {{ usuario.nome.charAt(0) }}
+                </div>
+                <div>
+                  <button class="btn btn-outline-secondary btn-sm fw-bold">Alterar Foto</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted">Nome Completo</label>
+              <input type="text" class="form-control" [(ngModel)]="usuario.nome">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted">Telefone / WhatsApp</label>
+              <input type="text" class="form-control" [(ngModel)]="usuario.telefone">
+            </div>
+            <div class="col-md-12">
+              <label class="form-label small fw-bold text-muted">E-mail de Acesso</label>
+              <input type="email" class="form-control bg-light" [(ngModel)]="usuario.email" readonly disabled>
+              <div class="form-text text-muted">Para alterar o e-mail, entre em contato com o suporte.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white border-top p-3 text-end rounded-bottom-4">
+          <button class="btn btn-dark fw-bold px-4" (click)="salvarPerfil()" [disabled]="loading()">
+            <span *ngIf="loading()" class="spinner-border spinner-border-sm me-2"></span>
+            Salvar Alterações
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="abaAtiva() === 'empresa'" class="card border-0 shadow-sm rounded-4 fade-in">
+        <div class="card-header bg-white border-bottom p-4">
+          <h5 class="fw-bold m-0">Dados Organizacionais</h5>
+        </div>
+        <div class="card-body p-4">
+          <div class="alert alert-success border-0 d-flex align-items-center mb-4">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span class="small fw-bold">Esta empresa está ativa e operando normalmente.</span>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label small fw-bold text-muted">Nome Fantasia</label>
+              <input type="text" class="form-control" [(ngModel)]="empresa.nome">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-muted">CNPJ</label>
+              <input type="text" class="form-control" [(ngModel)]="empresa.cnpj">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted">Pró-labore Desejado (R$)</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">R$</span>
+                <input type="number" class="form-control" [(ngModel)]="empresa.prolabore">
+              </div>
+              <div class="form-text text-muted">Valor usado para calcular o "Lucro Real".</div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-muted">Natureza Operacional</label>
+              <select class="form-select" [(ngModel)]="empresa.natureza">
+                <option value="PRODUTO">Venda de Produtos</option>
+                <option value="SERVICO">Prestação de Serviços</option>
+                <option value="MISTO">Misto</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white border-top p-3 text-end rounded-bottom-4">
+          <button class="btn btn-success fw-bold px-4" (click)="salvarEmpresa()" [disabled]="loading()">
+            <i class="bi bi-check2-all me-2"></i> Atualizar Dados
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="abaAtiva() === 'seguranca'" class="card border-0 shadow-sm rounded-4 fade-in">
+        <div class="card-header bg-white border-bottom p-4">
+          <h5 class="fw-bold m-0 text-danger">Zona de Segurança</h5>
+        </div>
+        <div class="card-body p-4">
+
+          <h6 class="fw-bold mb-3">Alterar Senha</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <input type="password" class="form-control" placeholder="Senha Atual" [(ngModel)]="senha.atual">
+            </div>
+            <div class="col-md-4">
+              <input type="password" class="form-control" placeholder="Nova Senha" [(ngModel)]="senha.nova">
+            </div>
+            <div class="col-md-4">
+              <input type="password" class="form-control" placeholder="Confirmar Nova Senha" [(ngModel)]="senha.confirmacao">
+            </div>
+            <div class="col-12 text-end">
+              <button class="btn btn-outline-dark fw-bold btn-sm" (click)="alterarSenha()">Atualizar Senha</button>
+            </div>
+          </div>
+
+          <hr class="border-secondary opacity-10 my-4">
+
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="fw-bold text-dark m-0">Sessões Ativas</h6>
+              <p class="text-muted small m-0">Faça logout de todos os outros dispositivos conectados.</p>
+            </div>
+            <button class="btn btn-light border text-danger fw-bold shadow-sm">
+              Desconectar Outros
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

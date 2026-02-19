@@ -1,0 +1,35 @@
+<div class="vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card p-4 p-md-5 shadow border-0 auth-card" style="width: 420px; border-radius: 1.5rem;">
+    <div class="text-center mb-4">
+      <i class="bi bi-graph-up-arrow text-success display-4"></i>
+      <h2 class="fw-bold mt-2">Foresight</h2>
+      <p class="text-muted small">Gestão inteligente para o seu negócio</p>
+    </div>
+
+    <form (submit)="handleLogin($event)">
+      <div class="mb-3">
+        <label class="form-label small fw-bold">E-mail</label>
+        <input type="email" name="email" [(ngModel)]="loginData.email" class="form-control form-control-lg fs-6" placeholder="seu@email.com" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label small fw-bold">Senha</label>
+        <input type="password" name="senha" [(ngModel)]="loginData.senha" class="form-control form-control-lg fs-6" placeholder="******" required>
+        <a routerLink="/recuperar-senha" class="text-success small text-decoration-none fw-bold d-block text-end mt-2">
+          Esqueceu a senha?
+        </a>
+      </div>
+
+      <button type="submit" class="btn btn-success btn-lg w-100 py-2 fw-bold shadow-sm mt-3">
+        Entrar no Sistema
+      </button>
+
+      <div class="text-center mt-4">
+        <p class="small text-muted">
+          Não tem conta?
+          <a routerLink="/cadastro" class="text-success fw-bold text-decoration-none">Criar agora</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>

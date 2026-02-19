@@ -1,0 +1,42 @@
+<div class="vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card border-0 shadow-lg p-4 p-md-5 auth-card" style="width: 450px; border-radius: 1.5rem;">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold text-dark m-0">Começar Agora</h2>
+      <p class="text-muted small">Crie sua conta Foresight em poucos segundos</p>
+    </div>
+
+    <form (submit)="registrar()">
+      <div class="mb-3">
+        <label class="form-label small fw-bold">Nome Completo</label>
+        <input type="text" [(ngModel)]="usuario.nome" name="nome" class="form-control" placeholder="Seu nome" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label small fw-bold">E-mail Profissional</label>
+        <input type="email" [(ngModel)]="usuario.email" name="email" class="form-control" placeholder="exemplo@email.com" required>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label small fw-bold">Senha</label>
+          <input type="password" [(ngModel)]="usuario.senha" name="senha" class="form-control" placeholder="******" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label small fw-bold">Confirmar</label>
+          <input type="password" [(ngModel)]="usuario.confirmarSenha" name="confirmarSenha" class="form-control" placeholder="******" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm mt-3" [disabled]="loading()">
+        {{ loading() ? 'Criando conta...' : 'Cadastrar e Acessar' }}
+      </button>
+    </form>
+
+    <div class="text-center mt-4">
+      <p class="small text-muted">
+        Já possui uma conta?
+        <a routerLink="/login" class="text-success fw-bold text-decoration-none">Fazer Login</a>
+      </p>
+    </div>
+  </div>
+</div>

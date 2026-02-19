@@ -1,1 +1,54 @@
-/* You can add global styles to this file, and also import other style files */
+// Fontes profissionais
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+:root {
+  --fs-primary: #15803d; // Verde Foresight
+  --fs-primary-hover: #166534;
+  --fs-bg: #f8fafc;
+  --fs-card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--fs-bg);
+  font-family: var(--font-body);
+  color: #1e293b;
+}
+
+h1, h2, h3, .fw-display {
+  font-family: var(--font-display);
+}
+
+.btn-primary {
+  background-color: var(--fs-primary);
+  border-color: var(--fs-primary);
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: var(--fs-primary-hover);
+    transform: translateY(-1px);
+  }
+}
+
+.fs-card {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--fs-card-shadow);
+  padding: 2rem;
+}
+
+.form-control {
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #cbd5e1;
+
+  &:focus {
+    border-color: var(--fs-primary);
+    box-shadow: 0 0 0 4px rgba(21, 128, 61, 0.1);
+  }
+}

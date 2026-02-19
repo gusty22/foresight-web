@@ -1,0 +1,53 @@
+.ls-tight {
+  letter-spacing: -0.025em;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+/* Estado Ativo da Aba */
+.active-tab {
+  background-color: #f0fdf4 !important; /* Verde muito claro */
+  border-left: 4px solid #198754 !important; /* Borda Verde Success */
+
+  .icon-circle {
+    background-color: #198754;
+    color: white;
+  }
+
+  .fw-bold {
+    color: #198754 !important;
+  }
+}
+
+.list-group-item {
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover:not(.active-tab) {
+    background-color: #f8f9fa;
+  }
+}
+
+/* Animação suave ao trocar de aba */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

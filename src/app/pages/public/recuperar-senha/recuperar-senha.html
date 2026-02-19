@@ -1,0 +1,46 @@
+<div class="vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card border-0 shadow-lg p-4 p-md-5 auth-card bg-white">
+
+    <div *ngIf="sucesso()" class="text-center">
+      <i class="bi bi-check-circle-fill text-success display-1"></i>
+      <h3 class="fw-bold mt-4">E-mail Enviado!</h3>
+      <p class="text-muted small mb-4">
+        Se o e-mail <strong>{{ email }}</strong> estiver cadastrado, você receberá um link para redefinir sua senha em instantes.
+      </p>
+      <button routerLink="/login" class="btn btn-success w-100 py-2 fw-bold">Voltar para o Login</button>
+    </div>
+
+    <div *ngIf="!sucesso()">
+      <div class="text-center mb-4">
+        <i class="bi bi-shield-lock text-success display-4"></i>
+        <h2 class="fw-bold mt-2">Recuperar Senha</h2>
+        <p class="text-muted small">Insira seu e-mail para receber as instruções.</p>
+      </div>
+
+      <form (submit)="solicitarRecuperacao()">
+        <div class="mb-4">
+          <label class="form-label small fw-bold">Seu E-mail de Cadastro</label>
+          <input type="email"
+                 [(ngModel)]="email"
+                 name="email"
+                 class="form-control form-control-lg fs-6"
+                 placeholder="seu@email.com"
+                 required>
+        </div>
+
+        <button type="submit"
+                class="btn btn-dark btn-lg w-100 py-2 fw-bold shadow-sm"
+                [disabled]="loading()">
+          {{ loading() ? 'Enviando...' : 'Enviar Link de Recuperação' }}
+        </button>
+
+        <div class="text-center mt-4">
+          <a routerLink="/login" class="text-muted small text-decoration-none fw-bold">
+            <i class="bi bi-arrow-left me-1"></i> Voltar para o Login
+          </a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

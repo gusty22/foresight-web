@@ -1,0 +1,84 @@
+<div class="container-fluid p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0 text-dark">Gestão de Despesas</h2>
+    <span class="badge bg-light text-dark border p-2">Mês Atual: {{ novaDespesa.data | date:'MMMM' }}</span>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 rounded-4 bg-white sticky-top" style="top: 20px;">
+        <h5 class="fw-bold mb-3">Novo Registro</h5>
+        <form (submit)="salvarDespesa()">
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Descrição</label>
+            <input type="text" [(ngModel)]="novaDespesa.descricao" name="descricao" class="form-control" placeholder="Ex: Aluguel, Internet..." required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Valor (R$)</label>
+            <input type="number" [(ngModel)]="novaDespesa.valor" name="valor" class="form-control" placeholder="0,00" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold">Data do Pagamento</label>
+            <input type="date" [(ngModel)]="novaDespesa.data" name="data" class="form-control" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-bold d-block mb-2">Classificação de Gasto</label>
+            <div class="form-check form-switch p-3 bg-light rounded-3 d-flex align-items-center justify-content-between">
+              <label class="form-check-label fw-bold small" [ngClass]="novaDespesa.ehPessoal ? 'text-primary' : 'text-success'">
+                {{ novaDespesa.ehPessoal ? '👤 CONTA PESSOAL (PF)' : '🏢 CONTA EMPRESA (PJ)' }}
+              </label>
+              <input class="form-check-input ms-0" type="checkbox" role="switch" [(ngModel)]="novaDespesa.ehPessoal" name="ehPessoal" style="transform: scale(1.2);">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-dark w-100 py-2 fw-bold shadow-sm">
+            <i class="bi bi-check-lg me-1"></i> Confirmar Lançamento
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+        <h5 class="fw-bold mb-4">Histórico do Mês</h5>
+
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <div *ngIf="!loading && listaDespesas().length === 0" class="text-center py-5">
+          <i class="bi bi-receipt text-muted fs-1"></i>
+          <p class="text-muted mt-2">Nenhuma despesa registrada este mês.</p>
+        </div>
+
+        <div class="table-responsive" *ngIf="!loading && listaDespesas().length > 0">
+          <table class="table table-hover align-middle">
+            <thead class="table-light small text-muted text-uppercase">
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th class="text-end">Valor</th>
+            </tr>
+            </thead>
+            <tbody class="small">
+            <tr *ngFor="let d of listaDespesas()">
+              <td>{{ d.data | date:'dd/MM/yyyy' }}</td>
+              <td class="fw-bold">{{ d.descricao }}</td>
+              <td>
+                  <span class="badge rounded-pill" [ngClass]="d.ehPessoal ? 'bg-primary-subtle text-primary' : 'bg-success-subtle text-success'">
+                    {{ d.ehPessoal ? 'PESSOAL' : 'EMPRESA' }}
+                  </span>
+              </td>
+              <td class="text-end fw-bold text-danger">- {{ d.valor | currency:'BRL' }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card border-0 shadow-lg p-5 auth-card" style="width: 550px; border-radius: 1.5rem;">
+    <div class="text-center mb-4">
+      <div class="bg-success-subtle d-inline-block p-3 rounded-circle mb-3">
+        <i class="bi bi-building-gear text-success fs-1"></i>
+      </div>
+      <h2 class="fw-bold mt-2">Perfil do Negócio</h2>
+      <p class="text-muted small">Configure as bases financeiras para o cálculo do seu lucro real.</p>
+    </div>
+
+    <form (submit)="salvarEmpresa()">
+      <div class="mb-3">
+        <label class="form-label small fw-bold text-uppercase opacity-75">Razão Social ou Nome Fantasia</label>
+        <div class="input-group border rounded-3 overflow-hidden">
+          <span class="input-group-text bg-white border-0"><i class="bi bi-briefcase text-muted"></i></span>
+          <input type="text" [(ngModel)]="empresa.nome" name="nome" class="form-control border-0 ps-1" placeholder="Ex: Foresight Soluções Contábeis" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label small fw-bold text-uppercase opacity-75">Pró-labore Mensal</label>
+          <div class="input-group border rounded-3 overflow-hidden">
+            <span class="input-group-text bg-white border-0 text-muted small">R$</span>
+            <input type="text"
+                   [value]="valorExibicao"
+                   (input)="formatarMoeda($event)"
+                   class="form-control border-0 ps-1"
+                   placeholder="0,00"
+                   required>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label small fw-bold text-uppercase opacity-75">Natureza Operacional</label>
+          <select [(ngModel)]="empresa.tipo" name="tipo" class="form-select border rounded-3" required>
+            <option value="PRODUTO">Venda de Produtos</option>
+            <option value="SERVICO">Prestação de Serviços</option>
+            <option value="SERVICO_PRODUTO">Misto (Produtos e Serviços)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="alert alert-secondary border-0 small mb-4">
+        <i class="bi bi-info-circle-fill me-2 text-primary"></i>
+        O <strong>Pró-labore</strong> é o valor bruto que a empresa destina para sua manutenção pessoal.
+      </div>
+
+      <button type="submit" class="btn btn-success btn-lg w-100 py-3 fw-bold shadow-sm" [disabled]="loading()">
+        {{ loading() ? 'Processando Registro...' : 'Finalizar Configuração' }}
+      </button>
+    </form>
+  </div>
+</div>
