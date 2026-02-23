@@ -1,0 +1,171 @@
+<div class="container-fluid p-4">
+  <div class="card border-0 shadow-sm p-4 rounded-4 bg-white position-relative">
+
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <div>
+        <h4 class="fw-bold text-dark m-0 tracking-tight">Histórico de Vendas</h4>
+        <p class="text-muted small m-0">Acompanhe todas as transações realizadas no PDV.</p>
+      </div>
+      <button class="btn btn-outline-secondary btn-sm" (click)="carregarHistorico()">
+        <i class="bi bi-arrow-clockwise"></i> Atualizar
+      </button>
+    </div>
+
+    <div *ngIf="erro()" class="alert alert-danger border-0 d-flex align-items-center mb-4 shadow-sm">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ erro() }}
+    </div>
+
+    <div *ngIf="loading()" class="position-absolute w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 10; top: 0; left: 0;">
+      <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle small">
+        <thead class="table-light text-uppercase text-muted">
+        <tr>
+          <th class="ps-3 py-3 border-bottom-0">Pedido</th>
+          <th class="py-3 border-bottom-0">Data</th>
+          <th class="py-3 border-bottom-0">Cliente</th>
+          <th class="py-3 border-bottom-0">Pagamento</th>
+          <th class="py-3 border-bottom-0">Status</th>
+          <th class="text-end py-3 border-bottom-0">Total</th>
+          <th class="text-center py-3 border-bottom-0 pe-3">Ações</th>
+        </tr>
+        </thead>
+        <tbody class="border-top-0">
+        <tr *ngFor="let venda of vendas()">
+          <td class="fw-bold text-muted ps-3 py-3">#{{ venda.id }}</td>
+
+          <td class="py-3">{{ venda.data | brFmt:'dataHora' }}</td>
+
+          <td class="py-3">
+            <div class="fw-bold text-dark">{{ venda.clienteNome }}</div>
+            <div class="text-muted extra-small">
+              {{ (venda.clienteDocumento | brFmt:'doc') || 'Consumidor Final' }}
+            </div>
+          </td>
+          <td class="py-3"><span class="badge bg-light text-dark border">{{ venda.formaPagamento }}</span></td>
+          <td class="py-3">
+              <span class="badge rounded-pill"
+                    [ngClass]="venda.statusPagamento === 'PAGO' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
+                {{ venda.statusPagamento }}
+              </span>
+          </td>
+
+          <td class="text-end fw-bold text-dark py-3">{{ venda.valorTotal | brFmt:'moeda' }}</td>
+
+          <td class="text-center pe-3 py-3">
+            <button *ngIf="venda.statusPagamento === 'PENDENTE'"
+                    class="btn btn-sm btn-success me-2"
+                    (click)="confirmarPagamento(venda)"
+                    title="Confirmar Recebimento">
+              <i class="bi bi-cash-coin"></i>
+            </button>
+
+            <button class="btn btn-sm btn-light text-primary me-2" (click)="verDetalhes(venda.id)" title="Ver Detalhes">
+              <i class="bi bi-eye-fill"></i>
+            </button>
+            <button class="btn btn-sm btn-light text-danger" (click)="baixarNotaFiscal(venda.id)" title="Imprimir Nota">
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="vendas().length === 0 && !loading()" class="text-center py-5 text-muted">
+        <i class="bi bi-inbox fs-1 opacity-25 d-block mb-3"></i>
+        <p class="m-0">Nenhuma venda registrada ainda.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade show" *ngIf="exibirModal()"></div>
+<div class="modal fade show d-block" *ngIf="exibirModal()" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+
+      <ng-container *ngIf="vendaSelecionada() as venda">
+
+        <div class="modal-header bg-light border-0 p-4">
+          <h5 class="fw-bold m-0"><i class="bi bi-receipt me-2 text-primary"></i>Detalhes da Venda #{{ venda.id }}</h5>
+          <button type="button" class="btn-close shadow-none" (click)="fecharModal()"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <div class="row mb-4 g-3">
+            <div class="col-md-6">
+              <label class="text-muted extra-small fw-bold tracking-wider mb-1">CLIENTE</label>
+              <div class="fw-bold fs-6 text-dark">{{ venda.clienteNome }}</div>
+
+              <div class="text-muted small">
+                {{ (venda.clienteDocumento | brFmt:'doc') || 'Não informado' }}
+              </div>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <label class="text-muted extra-small fw-bold tracking-wider mb-1">DATA E STATUS</label>
+
+              <div class="fw-bold text-dark">{{ venda.data | brFmt:'dataHora' }}</div>
+
+              <div class="badge mt-2" [ngClass]="venda.statusPagamento === 'PAGO' ? 'bg-success' : 'bg-danger'">
+                {{ venda.statusPagamento }}
+              </div>
+            </div>
+          </div>
+
+          <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">Itens da Compra</h6>
+          <div class="table-responsive mb-4">
+            <table class="table table-sm align-middle">
+              <thead class="table-light text-muted small text-uppercase">
+              <tr>
+                <th class="border-bottom-0 py-2">Produto</th>
+                <th class="text-center border-bottom-0 py-2">Qtd</th>
+                <th class="text-end border-bottom-0 py-2">Unitário</th>
+                <th class="text-end border-bottom-0 py-2">Subtotal</th>
+              </tr>
+              </thead>
+              <tbody class="border-top-0">
+              <tr *ngFor="let item of venda.itens">
+                <td class="fw-medium text-dark py-2">{{ item.produtoNome }}</td>
+                <td class="text-center py-2">{{ item.quantidade }}</td>
+
+                <td class="text-end text-muted py-2">{{ item.precoUnitario | brFmt:'moeda' }}</td>
+                <td class="text-end fw-bold text-dark py-2">{{ (item.precoUnitario * item.quantidade) | brFmt:'moeda' }}</td>
+
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row bg-light p-4 rounded-3 align-items-center">
+            <div class="col-md-6">
+              <small class="text-muted d-block text-uppercase fw-bold mb-1">Forma de Pagamento</small>
+              <strong class="text-dark fs-5">{{ venda.formaPagamento }}</strong>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+              <small class="text-muted d-block text-uppercase fw-bold mb-1">Valor Total</small>
+
+              <h2 class="fw-bold text-success m-0">{{ venda.valorTotal | brFmt:'moeda' }}</h2>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer border-0 p-4 bg-light">
+          <button *ngIf="venda.statusPagamento === 'PENDENTE'"
+                  class="btn btn-success fw-bold px-4 me-2"
+                  (click)="confirmarPagamento(venda)">
+            <i class="bi bi-check-circle me-2"></i> Confirmar Pagamento
+          </button>
+
+          <button class="btn btn-outline-dark fw-bold px-4" (click)="baixarNotaFiscal(venda.id)">
+            <i class="bi bi-printer me-2"></i> Imprimir Nota
+          </button>
+          <button class="btn btn-dark fw-bold px-4" (click)="fecharModal()">Fechar</button>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+</div>

@@ -1,88 +1,112 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth-guard';
-import { configGuard } from './core/guards/config-guard';
+import { authGuard } from './core/auth/auth-guard';
 
-// Layouts
-import { PublicLayoutComponent } from './layout/public-layout/public-layout';
-import { PrivateLayoutComponent } from './layout/private-layout/private-layout';
-
-// Páginas Públicas
-import { LoginComponent } from './pages/public/login/login';
-import { CadastroComponent } from './pages/public/cadastro/cadastro';
-import { RecuperarSenhaComponent } from './pages/public/recuperar-senha/recuperar-senha';
-
-// Páginas Privadas
-import { DashboardComponent } from './pages/private/dashboard/dashboard';
-import { VendasComponent } from './pages/private/vendas/vendas';
-import { HistoricoVendasComponent } from './pages/private/vendas/historico-vendas/historico-vendas';
-import { ProdutosComponent } from './pages/private/produtos/produtos'; // Estoque
-import { ClientesComponent } from './pages/private/clientes/clientes'; // Novo
-import { FluxoCaixaComponent } from './pages/private/fluxo-caixa/fluxo-caixa'; // Novo
-import { ConfiguracoesComponent } from './pages/private/configuracoes/configuracoes'; // Novo
-import { DespesasComponent } from './pages/private/despesas/despesas';
-import { DreComponent } from './pages/private/relatorios/dre/dre';
-import { AuditoriaComponent } from './pages/private/auditoria/auditoria';
-import { LucratividadeComponent } from './pages/private/produtos/analise/lucratividade';
-import { CadastroEmpresaComponent } from './pages/private/empresas/cadastro-empresa/cadastro-empresa';
-import { EmpresasComponent } from './pages/private/empresas/empresas';
+// Importação estática APENAS para os Layouts Pai
+import { PublicLayoutComponent } from './layout/public/public-layout';
+import { PrivateLayoutComponent } from './layout/private/private-layout';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // Rotas Públicas
+  // ==========================================
+  // ROTAS PÚBLICAS (Onboarding & Auth)
+  // ==========================================
   {
     path: '',
     component: PublicLayoutComponent,
     children: [
-      { path: 'login', component: LoginComponent },
-      { path: 'cadastro', component: CadastroComponent },
-      { path: 'recuperar-senha', component: RecuperarSenhaComponent }
-    ]
-  },
-
-  // Rotas Privadas (Sistema)
-  {
-    path: 'sistema',
-    component: PrivateLayoutComponent,
-    canActivate: [authGuard],
-    children: [
-      // Onboarding (Primeiro acesso)
-      { path: 'empresas/cadastro', component: CadastroEmpresaComponent },
-
-      // Core (Protegido por ConfigGuard - exige empresa ativa)
       {
-        path: '',
-        canActivate: [configGuard],
-        children: [
-          { path: 'dashboard', component: DashboardComponent },
-
-          // Operacional
-          { path: 'vendas', component: VendasComponent },
-          { path: 'vendas/historico', component: HistoricoVendasComponent },
-          { path: 'clientes', component: ClientesComponent }, // Rota Corrigida
-
-          // Gestão
-          { path: 'estoque', component: ProdutosComponent }, // Mapeado para Produtos
-          { path: 'produtos', redirectTo: 'estoque', pathMatch: 'full' }, // Redireciona antigo para novo
-          { path: 'produtos/analise', component: LucratividadeComponent },
-
-          // Financeiro
-          { path: 'fluxo-caixa', component: FluxoCaixaComponent }, // Rota Corrigida
-          { path: 'despesas', component: DespesasComponent },
-          { path: 'relatorios/dre', component: DreComponent },
-
-          // Sistema
-          { path: 'auditoria', component: AuditoriaComponent },
-          { path: 'configuracoes', component: ConfiguracoesComponent }, // Rota Corrigida
-          { path: 'empresas', component: EmpresasComponent }, // Minha Empresa
-
-          // Default do sistema
-          { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-        ]
+        path: 'login',
+        loadComponent: () => import('./features/auth/login/pages/login').then(m => m.LoginComponent)
+      },
+      {
+        path: 'cadastro',
+        loadComponent: () => import('./features/auth/cadastro/pages/cadastro').then(m => m.CadastroComponent)
+      },
+      {
+        path: 'recuperar-senha',
+        loadComponent: () => import('./features/auth/recuperar-senha/pages/recuperar-senha').then(m => m.RecuperarSenhaComponent)
       }
     ]
   },
 
-  // Fallback (Erro 404 volta para login)
+  // ==========================================
+  // ROTAS PRIVADAS (Sistema Core SaaS)
+  // ==========================================
+  {
+    path: 'sistema',
+    component: PrivateLayoutComponent,
+    canActivate: [authGuard], // Blindagem total: nenhuma rota filha carrega sem token válido
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/dashboard/pages/dashboard').then(m => m.DashboardComponent)
+      },
+
+      // --- Operacional ---
+      {
+        path: 'vendas',
+        loadComponent: () => import('./features/vendas/pages/vendas').then(m => m.VendasComponent)
+      },
+      {
+        path: 'vendas/historico',
+        loadComponent: () => import('./features/vendas/pages/historico-vendas/historico-vendas').then(m => m.HistoricoVendasComponent)
+      },
+      {
+        path: 'clientes',
+        loadComponent: () => import('./features/clientes/pages/clientes').then(m => m.ClientesComponent)
+      },
+
+      // --- Gestão ---
+      {
+        path: 'estoque',
+        loadComponent: () => import('./features/produtos/pages/produtos').then(m => m.ProdutosComponent)
+      },
+      {
+        path: 'produtos', // Alias para manter atalhos antigos funcionando
+        redirectTo: 'estoque', pathMatch: 'full'
+      },
+      {
+        path: 'produtos/analise',
+        loadComponent: () => import('./features/produtos/pages/analise/lucratividade').then(m => m.LucratividadeComponent)
+      },
+
+      // --- Financeiro ---
+      {
+        path: 'fluxo-caixa',
+        loadComponent: () => import('./features/financeiro/pages/fluxo-caixa/fluxo-caixa').then(m => m.FluxoCaixaComponent)
+      },
+      {
+        path: 'despesas',
+        loadComponent: () => import('./features/financeiro/pages/despesas/despesas').then(m => m.DespesasComponent)
+      },
+
+      // --- Relatórios ---
+      {
+        path: 'relatorios/dre',
+        loadComponent: () => import('./features/relatorios/dre/pages/dre').then(m => m.DreComponent)
+      },
+      {
+        path: 'relatorios/avancado',
+        loadComponent: () => import('./features/relatorios/avancado/pages/relatorio-geral/relatorio-geral').then(m => m.RelatorioGeralComponent)
+      },
+
+      // --- Sistema e Segurança ---
+      {
+        path: 'auditoria',
+        loadComponent: () => import('./features/auditoria/pages/auditoria').then(m => m.AuditoriaComponent)
+      },
+      {
+        path: 'configuracoes',
+        loadComponent: () => import('./features/configuracoes/pages/configuracoes').then(m => m.ConfiguracoesComponent)
+      },
+
+      // Fallback interno: Se o usuário digitar algo errado dentro de /sistema, cai no Dashboard
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: '**', redirectTo: 'dashboard' }
+    ]
+  },
+
+  // Fallback Global de Segurança
   { path: '**', redirectTo: 'login' }
 ];
